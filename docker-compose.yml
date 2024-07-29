@@ -1,39 +1,119 @@
-version: '3.6'
+version: '3'
 services:
-  telegraf:
-    image: telegraf:1.18-alpine
-    volumes:
-    - ./telegraf/etc/telegraf.conf:/etc/telegraf/telegraf.conf:ro
-    depends_on:
-      - influxdb
-    links:
-      - influxdb
+  elasticsearch:
+    container_name: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0
+    env_file: .env
     ports:
-    - '127.0.0.1:8125:8125/udp'
+      - "9200:9200"
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    networks:
+      - app-network
 
   influxdb:
-    image: influxdb:1.8-alpine
-    env_file: configuration.env
+    image: influxdb:1.8
+    container_name: influxdb
+    env_file: .env
+    environment:
+      - INFLUX_HOST=localhost
     ports:
-      - '127.0.0.1:8086:8086'
+      - "${INFLUXDB_PORT}:${INFLUXDB_PORT}"
     volumes:
       - ./:/imports
       - influxdb_data:/var/lib/influxdb
+    entrypoint: sh -c "influxd run -config /etc/influxdb/influxdb.conf & until influx -host localhost -execute 'CREATE DATABASE telegraf'; do echo waiting for influxdb; sleep 1; done; wait"
+    networks:
+      - app-network
+
+  mongodb:
+    container_name: mongodb
+    image: mongo:4.2
+    env_file: .env
+    ports:
+      - "${MONGO_PORT}:${MONGO_PORT}"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - app-network
 
   grafana:
+    container_name: grafana
     image: grafana/grafana:8.0.2
     depends_on:
       - influxdb
-    env_file: configuration.env
+    env_file: .env
     links:
       - influxdb
     ports:
-      - '127.0.0.1:3000:3000'
+      - "3001:3000"
     volumes:
       - grafana_data:/var/lib/grafana
       - ./grafana/provisioning/:/etc/grafana/provisioning/
       - ./grafana/dashboards/:/var/lib/grafana/dashboards/
+    networks:
+      - app-network
+
+  app:
+    container_name: app
+    build: ./app
+    ports:
+      - "${APP_PORT}:3000"
+    env_file:
+      - .env
+    networks:
+      - app-network
+    depends_on:
+      - mongodb
+      - elasticsearch
+
+  nginx:
+    container_name: nginx
+    image: nginx:latest
+    env_file: .env
+    ports:
+      - "${NGINX_PORT}:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - app
+    networks:
+      - app-network
+
+  telegraf:
+    container_name: telegraf
+    image: telegraf:1.29-alpine
+    env_file: .env
+    volumes:
+      - ./telegraf/etc/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - influxdb
+      - nginx
+      - app
+      - mongodb
+      - elasticsearch
+      - grafana
+    links:
+      - influxdb
+    ports:
+      - "${TELEGRAF_PORT}:${TELEGRAF_PORT}/udp"
+    networks:
+      - app-network
+    entrypoint: /bin/sh -c "chmod 666 /var/run/docker.sock && /entrypoint.sh telegraf"
+
 
 volumes:
   grafana_data: {}
   influxdb_data: {}
+  mongodb_data: {}
+  esdata: {
+    driver: local
+  }
+
+networks:
+  app-network:
+    driver: bridge

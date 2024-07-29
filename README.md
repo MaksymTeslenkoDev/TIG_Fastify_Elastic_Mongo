@@ -1,8 +1,6 @@
-# Example Docker Compose project for Telegraf, InfluxDB and Grafana
+# Example Docker Compose project for Telegraf, InfluxDB, Grafana, Nginx, Fastify, MongoDb and Elasticsearch
 
-This an example project to show the TIG (Telegraf, InfluxDB and Grafana) stack.
-
-![Example Screenshot](./example.png?raw=true "Example Screenshot")
+This an example project to show the TIG (Telegraf, InfluxDB and Grafana) stack with Fatify application, MongoDB, ElasticSearch and Nginx.
 
 ## Start the stack with docker compose
 
@@ -13,7 +11,7 @@ $ docker-compose up
 ## Services and Ports
 
 ### Grafana
-- URL: http://localhost:3000 
+- URL: http://localhost:3001
 - User: admin 
 - Password: admin 
 
@@ -26,48 +24,35 @@ $ docker-compose up
 - Password: admin 
 - Database: influx
 
+### MongoDB 
+- Port: 27017
+- DB: HSA_DB
 
-Run the influx client:
+### Elasticsearch
+- 
 
-```bash
-$ docker-compose exec influxdb influx -execute 'SHOW DATABASES'
+## Run the Genera Load script
+```
+cd app/scripts
+node generateLoad.js
 ```
 
-Run the influx interactive console:
+### Example of load metrics after generated load
+![Network](./images/Network_1.png "Network load")
 
-```bash
-$ docker-compose exec influxdb influx
+![System](./images/System_1.png "System load")
 
-Connected to http://localhost:8086 version 1.8.0
-InfluxDB shell version: 1.8.0
->
-```
+![Docker 1](./images/Docker_1.png "Docker load")
+![Docker 2](./images/Docker_2.png "Docker load")
+![Docker 3](./images/Docker_3.png "Docker load")
 
-[Import data from a file with -import](https://docs.influxdata.com/influxdb/v1.8/tools/shell/#import-data-from-a-file-with-import)
+![Elasticsearch 1](./images/ElasticSearch_1.png "Elasticsearch load")
+![Elasticsearch 2](./images/ElasticSearch_2.png "Elasticsearch load")
+![Elasticsearch 3](./images/ElasticSearch_3.png "Elasticsearch load")
 
-```bash
-$ docker-compose exec -w /imports influxdb influx -import -path=data.txt -precision=s
-```
+![MongoDB 1](./images/Mongo_1.png "Mongo load")
+![MongoDB 2](./images/Mongo_2.png "Mongo load")
 
-## Run the PHP Example
-
-The PHP example generates random example metrics. The random metrics are beeing sent via UDP to the telegraf agent using the StatsD protocol.
-
-The telegraf agents aggregates the incoming data and perodically persists the data into the InfluxDB database.
-
-Grafana connects to the InfluxDB database and is able to visualize the incoming data.
-
-```bash
-$ cd php-example
-$ composer install
-$ php example.php
-Sending Random metrics. Use Ctrl+C to stop.
-..........................^C
-Runtime:	0.88382697105408 Seconds
-Ops:		27 
-Ops/s:		30.548965899738 
-Killed by Ctrl+C
-```
 
 ## License
 

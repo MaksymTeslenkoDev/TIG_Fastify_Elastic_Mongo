@@ -1,0 +1,8 @@
+node_modules
+*.log
+*.done
+*.pem
+data/
+.env
+MOCK_DATA.json
+movies.json

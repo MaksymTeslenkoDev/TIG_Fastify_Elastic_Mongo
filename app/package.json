@@ -1,0 +1,45 @@
+{
+  "name": "nodejs-fastify",
+  "version": "1.0.0",
+  "description": "Fastify powered NodeJS application runtime",
+  "license": "MIT",
+  "private": true,
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "test": "npm run lint && tsc",
+    "lint": "eslint . && prettier -c \"**/*.js\" \"**/*.ts\"",
+    "fmt": "prettier --write \"**/*.js\" \"**/*.ts\"",
+    "dev": "nodemon --watch server.js",
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": "16 || 18 || 19 || 20"
+  },
+  "dependencies": {
+    "@elastic/elasticsearch": "^8.14.0",
+    "@fastify/elasticsearch": "^3.1.0",
+    "@fastify/mongodb": "^8.0.0",
+    "@fastify/static": "^6.10.2",
+    "@fastify/websocket": "^8.2.0",
+    "date-fns": "^3.6.0",
+    "env-schema": "^6.0.0",
+    "fastify": "^4.28.1",
+    "fastify-plugin": "^4.5.1",
+    "fluent-json-schema": "^5.0.0",
+    "nodemon": "^3.1.4",
+    "pg": "^8.11.1",
+    "ws": "^8.12.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.4.4",
+    "@types/pg": "^8.10.2",
+    "@types/ws": "^8.5.5",
+    "eslint": "^8.45.0",
+    "eslint-config-prettier": "^8.6.0",
+    "eslint-plugin-import": "^2.23.4",
+    "eslint-plugin-prettier": "^5.0.0",
+    "prettier": "^3.0.0",
+    "typescript": "^5.1.6"
+  }
+}
