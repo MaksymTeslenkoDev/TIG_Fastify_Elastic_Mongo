@@ -29,9 +29,10 @@ $ docker-compose up
 - DB: HSA_DB
 
 ### Elasticsearch
-- 
+- Port:9200
+- Index: movies
 
-## Run the Genera Load script
+## Generate Load
 ```
 cd app/scripts
 node generateLoad.js
