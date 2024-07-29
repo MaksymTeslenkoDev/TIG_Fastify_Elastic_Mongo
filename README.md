@@ -39,18 +39,24 @@ node generateLoad.js
 ```
 
 ### Example of load metrics after generated load
+
+Network
 ![Network](./images/Network_1.png "Network load")
 
+System
 ![System](./images/System_1.png "System load")
 
+Docker
 ![Docker 1](./images/Docker_1.png "Docker load")
 ![Docker 2](./images/Docker_2.png "Docker load")
 ![Docker 3](./images/Docker_3.png "Docker load")
 
+Elasticsearch
 ![Elasticsearch 1](./images/ElasticSearch_1.png "Elasticsearch load")
 ![Elasticsearch 2](./images/ElasticSearch_2.png "Elasticsearch load")
 ![Elasticsearch 3](./images/ElasticSearch_3.png "Elasticsearch load")
 
+Mongo
 ![MongoDB 1](./images/Mongo_1.png "Mongo load")
 ![MongoDB 2](./images/Mongo_2.png "Mongo load")
 
